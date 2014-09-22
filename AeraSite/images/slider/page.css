@@ -1,0 +1,178 @@
+
+div#content {
+  text-align:center;
+  margin-left:auto;margin-right:auto;
+  width:980px;
+  font-size:12px;
+  line-height:120%;
+  }
+.box1 {
+  float: right;
+  width: 400px;
+  margin-top:10px;
+  margin-bottom:10px;
+  }
+.box2 {
+  float: right;
+  width: 580px;
+  margin-top:10px;
+  margin-bottom:10px;
+  color:#333333;
+  font-size:12px;
+  line-height:120%;
+  text-align:left;
+  }
+.box_naka1 {
+  float:left;
+  width:220px;
+  }
+.box_naka2 {
+  float:left;
+  width:360px;
+  }
+img.images_left {
+  float:left;
+  padding:10px;
+  }
+img.bana {
+  padding:10px;
+  }
+
+/* 料金table*/
+table.table1 {
+  width: 800px;
+  border: 1px #E3E3E3 solid;
+  border-collapse: collapse;
+  border-spacing: 0;
+  }
+table.table1 th {
+  padding: 10px;
+  border: #E3E3E3 solid;
+  border-width: 0 0 1px 1px;
+  background: #F5F5F5;
+  font-weight: bold;
+  line-height: 120%;
+  text-align: center;
+  }
+table.table1 td {
+  padding: 10px;
+  border: #E3E3E3 solid;
+  border-width: 0 0 1px 1px;
+  text-align: center;
+  }
+
+.room_box {
+  width:700px;
+  background-color:#AACCF7;
+  border:1px #666666 solid;
+  margin-top:10px;
+  margin-bottom:50px;
+  color:#333333;
+  margin-left:auto;
+  margin-right:auto;
+  text-align:left;
+  }
+img.room_i {
+  float:left;
+  padding:10px;
+  }
+.room_box1 {
+	width:700px;
+	background-color:#FFFFCC;
+	border:1px #666666 solid;
+	margin-top:10px;
+	margin-bottom:30px;
+	color:#333333;
+	margin-left:auto;
+	margin-right:auto;
+	text-align:left;
+  }
+ 
+/* MENU */
+
+.menu_box {
+  width:904px;
+  margin-left:auto;
+  margin-right:auto;
+  text-align:left;
+  margin-bottom:20px;
+  }
+.menu_box1 {
+  width:410;
+  margin-right:20px;
+  margin-left:20px;
+  background-color:#333333;
+  border:1px #666666 solid;
+  float:left;
+  color:#FFFFFF;
+  }
+.menu_box2 {
+  width:410px;
+  margin-left:20px;
+  margin-right:20px;
+  background-color:#ffffff;
+  border:1px #666666 solid;
+  float:left;
+  }
+p.menu_t1 {
+  font-size:14px;
+  font-weight:500;
+  color: #CC0000;
+  }
+.menu_t2 {
+  font-size:12px;
+  text-indent:1.0em;
+  color:#66CCFF;
+  }
+.menu_t3 {
+  font-size:12px;
+  }
+.menu_box3 {
+  width:220px;
+  float:left;
+  }
+.menu_box4 {
+  width:190px;
+  float:left;
+  }
+
+/* postmail */
+.postmail_box {
+  width:700px;
+  margin-left:auto;
+  margin-right:auto;
+  text-align:center;
+  }
+.post_t {
+  margin-left:20px;
+  font-size:12px;
+  text-align:left;
+  color:#666666;
+  }
+.post_t1 {
+  margin-left:50px;
+  font-size:18px;
+  text-align:left;
+  color:#FF6600;
+  }
+
+/* access */
+strong.ttl { 
+  text-align:left;
+  border-left:solid 4px #cc0000;
+  display:block; padding:2px 5px; margin-top:2em; 
+  }
+.access_box {
+  width:600px;
+  margin-left:auto;
+  margin-right:auto;
+  text-align:center;
+  }
+.access_t {
+  margin-left:20px;
+  font-size:12px;
+  text-align:left;
+  color:#666666;
+  }
+  
+  
