@@ -1109,11 +1109,14 @@ class Accounts extends CI_Controller
             $result = file_get_contents("http://senpohseng.ddns.net/register/add.php?".$argv);
 
             if ($result >= 100)
+            {
                 $this->inputs['result'] = 'Account has been successfully registered';
+                $chk = $AeraDB['www']->query("INSERT INTO ae_usergames(gid,aid,uid) VALUES(2, ".$qrow['aid'].", ".$result.");");
+            }
             else if ($result == 1)
                 $this->inputs['result'] = 'Your account is unable to be registered with the current game (Reason: Username is existed due tester or already registered). Please register with another account.';
             else
-                $this->inputs['result'] = 'Something goes wrong, please report this to webmaster.';
+                $this->inputs['result'] = 'Something goes wrong or maybe server still under maintenance, please report this to webmaster.';
             //$this->aera->addviews('CONTENT', 'reggame', array());
         }
         else

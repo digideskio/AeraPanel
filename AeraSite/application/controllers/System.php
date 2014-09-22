@@ -332,10 +332,14 @@ class System extends CI_Controller
         $filename = 'images/registergame/'.$this->uri->segment(3).'.jpg';
         $w = $this->uri->segment(4);
         $h = $this->uri->segment(5);
+        
         $percent = 0.5;
 
 // Content type
-        header('Content-Type: image/jpeg');
+        if ($w == "gif")
+            header('Content-Type: image/gif');
+        else
+            header('Content-Type: image/jpeg');
 
 // Get new sizes
         list($width, $height) = getimagesize($filename);
