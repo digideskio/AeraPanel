@@ -894,9 +894,9 @@ class Accounts extends CI_Controller
                     {
                         $prow[game] = "PWI ./. " . $prow[oprice] . " AP";
                         if (isset($prow[oimg]))
-                            $prow[url] = "http://www.perfectworld.com.my/upload/" . $prow[oimg];
+                            $prow[url] = "/upload/" . $prow[oimg];
                         else
-                            $prow[url] = "http://www.pwdatabase.com/images/icons/generalm/" . $prow[oiid] . ".gif";
+                            $prow[url] = "/images/icons/generalm/" . $prow[oiid] . ".gif";
                         $prow[link]  = "/?/Mall/View/" . $prow[oid];
                         $prow[title] = $prow[oname];
                     }
@@ -921,7 +921,7 @@ class Accounts extends CI_Controller
                     {
                         $prow[game] = "RYL2 ./. " . $prow[oprice] . " AP";
                         if (isset($prow[oimg]))
-                            $prow[url] = "http://www.perfectworld.com.my/upload/" . $prow[oimg];
+                            $prow[url] = "/upload/" . $prow[oimg];
                         else
                             $prow[url] = "http://www.pwdatabase.com/images/icons/generalm/" . $prow[oiid] . ".gif";
                         $prow[link]  = "/?/Mall/View/" . $prow[oid];
@@ -1092,7 +1092,7 @@ class Accounts extends CI_Controller
         $userq = $AeraDB['www']->query("SELECT aname, aemail, apass FROM ae_accounts where aid='".$this->session->userdata('uid')."' LIMIT 0,1;");
 
         $qrow     = $userq->row_array();
-        if ($this->uri->segment(3) == "FWI")
+        if ($this->uri->segment(3) == "FWM")
         {
             $this->inputs['result'] = 'Registering your account into Forsaken World Malaysia game';
             //
@@ -1119,6 +1119,10 @@ class Accounts extends CI_Controller
                 $this->inputs['result'] = 'Something goes wrong or maybe server still under maintenance, please report this to webmaster.';
             //$this->aera->addviews('CONTENT', 'reggame', array());
         }
+        elseif ($this->uri->segment(3,0))
+        {
+            $this->inputs['result'] = 'Please select any other game you want to register with your current account. The selected game is under maintenance.';
+        }
         else
         {
             //$this->aera->push('TITLE', '');
@@ -1126,9 +1130,67 @@ class Accounts extends CI_Controller
             //$this->aera->addviews('CONTENT', 'blank', array());
             $this->inputs['result'] = 'Please select any game you want to register with your current account';
         }
+    $this->inputs['result'] .= "<HR>";
+        $this->aera->addviews('CONTENT', 'result', $this->inputs);
+        
+            $query = $AeraDB['www']->query("select * from ae_games ORDER BY gid ASC");
+            if ($query->num_rows() >= 1)
+            {
+                $num = 0;
+                foreach ($query->result_array() as $prow)
+                {
+                    $prow[game] = ""; //$prow[gfull];
+                    
+                    //OPENED SERVER
+                    if ($prow[gstat] == 10)
+                        $prow[game] = 'Online';
+                    elseif ($prow[gstat] == 11)
+                        $prow[game] = 'Newly Opened <img src="/images/registergame/new.gif">';
+                    elseif ($prow[gstat] == 12)
+                        $prow[game] = 'Free Gift for current Event <img src="/images/registergame/new.gif">';
+                    elseif ($prow[gstat] == 13)
+                        $prow[game] = 'For Tester';
+                    elseif ($prow[gstat] == 14)
+                        $prow[game] = 'Alpha Member only';
+                    elseif ($prow[gstat] == 15)
+                        $prow[game] = 'Beta Member only';
+
+                        
+                    //CLOSE SERVER/FULL
+                    elseif ($prow[gstat] == 20)
+                        $prow[game] = 'Under Maintenance (Minutes)';
+                    elseif ($prow[gstat] == 21)
+                        $prow[game] = 'Under Maintenance (Hours)';
+                    elseif ($prow[gstat] == 22)
+                        $prow[game] = 'Under Maintenance (Days)';
+                    elseif ($prow[gstat] == 23)
+                        $prow[game] = 'Under Maintenance (Months)';
+                    elseif ($prow[gstat] == 24)
+                        $prow[game] = 'Under Development';
+                    elseif ($prow[gstat] == 25)
+                        $prow[game] = 'Server Full';
+                    elseif ($prow[gstat] == 26)
+                        $prow[game] = 'N/A';
+                    else
+                        $prow[game] = 'Offline';
+                    
+                    $prow[url] = "/?/System/Image/" . strtolower($prow[gname]) ."/100/100";
+                    $prow[link]  = "/?/Accounts/RegisterGame/" . $prow[gname];
+                    $prow[title] = $prow[gfull];
+                    $num++;
+                    if ($num == 3)
+                    {
+                        $this->aera->addviews("content", "list2", $prow);
+                        $num = 0;
+                    }
+                    else
+                        $this->aera->addviews("content", "list", $prow);
+                }
+            }
+            
         $AeraDB['www']->Close();
-        $this->aera->push('TITLE', '');
-        $this->aera->addviews('CONTENT', 'reggame', array());
+        $this->aera->push('TITLE', 'Game Account Registration');
+
         $this->viewpage();
     }
 
@@ -1660,8 +1722,22 @@ class Accounts extends CI_Controller
                     $result0 = $AeraDB['www']->query("SELECT * from ae_accounts WHERE aname='" . $Login . "' OR aemail='" . $Email . "'");
                     if ($result0->num_rows() < 1)
                     {
+                        
+                        $query      = $AeraDB['www']->query("select i.* from ae_ipcountry i where i.ipfrom<=" . abs(ip2long($_SERVER[REMOTE_ADDR])) . " AND i.ipto>=" . abs(ip2long($_SERVER[REMOTE_ADDR])) . " LIMIT 0,1");
+                        $ipcountry = $query->row_array();
+                        if (strlen($ipcountry['country2']) == 2)
+                        {
+                            $country = strtolower($ipcountry['country2']);
+                            $countryf = $ipcountry['country'];
+                        }
+                        else
+                        {
+                            $country = "my";
+                            $countryf = "Malaysia";
+                        }
+                        
                         //BEGIN REGISTRATION into mybb
-                        $result1 = $AeraDB['www']->query("INSERT INTO ae_accounts (aname, aemail, apass, aregcode, astatus) VALUES ('$Login', '$Email', '$upass', '$hash_key', 0);");
+                        $result1 = $AeraDB['www']->query("INSERT INTO ae_accounts (aname, aemail, apass, aregcode, astatus, ipcountry) VALUES ('$Login', '$Email', '$upass', '$hash_key', 0, '$country');");
 
                         $result2 = $AeraDB['www']->query("INSERT IGNORE INTO mybb_users VALUES (NULL, '" . $ufname . "', '" . $saltedpwd . "', '" . $key . "', 'Ts9mWix2SnFqhXJkrj6kTYD9qW68nJbFfcADSlruTzVifXdhLG', '" . $Email . "', 0, '', '', '', 2, '', 0, '', 1380839254, 1380839405, 1380839254, 0, '', '0', '', '', '', '', 'all', '', 1, 0, 0, 0, 1, 0, 1, 0, 'linear', 1, 1, 1, 1, 0, 0, 0, '', '', '8', 0, 2, '', '', 0, 0, 0, '0', '', '', '', 0, 0, 0, '175.145.132.177', '175.145.132.177', -1349417807, -1349417807, '', 151, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, '');");
 
@@ -1679,7 +1755,7 @@ class Accounts extends CI_Controller
                         {
                             if ($this->sendMail($umail, $uname, $hash_key, 'N/A'))
                             {
-                                $resultdl = file_get_contents("http://www.perfectworld.com.my/?/Accounts/Logger?dl=2&q=" . $uname);
+                                $resultdl = file_get_contents("http://www.perfectworld.com.my/?/Accounts/Logger?dl=2&q=" . $uname . "&w=". $country . "&e=".$countryf);
                                 //$this->aera->logger($uname." just registered at the website");
                                 $this->inputs['MSG'] = "Registration success. Please check your email to validate.";
                                 redirect('/Accounts/Success', 'refresh');
@@ -2149,7 +2225,26 @@ class Accounts extends CI_Controller
         {
             $this->load->database("www");
             $name = $this->input->get('q');
-            $this->db->query("INSERT into ae_activities (amsg, vstr1) VALUES ('REGISTER', '" . $name . "');");
+            $name2 = $this->input->get('w');
+            $name3 = $this->input->get('e');
+            $name4 = $this->input->get('r');
+            $name5 = $this->input->get('t');
+            $name6 = $this->input->get('y');
+            $this->db->query("INSERT into ae_activities (amsg, vstr1, vstr2, vstr3, vint1, vint2, vint3) VALUES ('REGISTER', '" . $name . "', '" . $name2 . "', '" . $name3 . "', '" . $name4 . "', '" . $name5 . "', '" . $name6 . "');");
+            $this->db->Close();
+            die("OK");
+        }
+        else if ($this->input->get('dl') == 3)
+        {
+            $this->load->database("www");
+            $type = $this->input->get('type');
+            $name = $this->input->get('q');
+            $name2 = $this->input->get('w');
+            $name3 = $this->input->get('e');
+            $name4 = $this->input->get('r');
+            $name5 = $this->input->get('t');
+            $name6 = $this->input->get('y');
+            $this->db->query("INSERT into ae_activities (amsg, vstr1, vstr2, vstr3, vint1, vint2, vint3) VALUES ('" . $type . "', '" . $name . "', '" . $name2 . "', '" . $name3 . "', '" . $name4 . "', '" . $name5 . "', '" . $name6 . "');");
             $this->db->Close();
             die("OK");
         }

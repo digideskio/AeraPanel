@@ -246,16 +246,18 @@ class System extends CI_Controller
             //RECENT SECTION
             ////////////////////////////////////////////////////////////////
             if (true) {
-                $limit = 10;
+                $limit = 8;
                 //$query = $this->db->query("select * from activities WHERE ((amsg not Like '%test%') AND (amsg not Like '%admin%') AND (amsg not Like 'gm%')) and ((vstr1 not Like '%test%' AND vstr1 not Like 'admin' AND vstr1 not Like 'gm%')) ORDER BY aid DESC LIMIT 0,$limit");
                 $_qrecent = $AeraDB['www']->query("DELETE from ae_activities WHERE length(amsg) <= 7;");
-                $qrecent = $AeraDB['www']->query("select * from ae_activities WHERE ((amsg not Like '%test%') AND (amsg not Like '%:LOG%') AND (amsg not Like '%quest%') AND (amsg not Like '%logged in%') AND (amsg not Like '%admin%') AND (amsg not Like 'gm%')) and ((vstr1 not Like '%test%' AND vstr1 not Like 'admin' AND vstr1 not Like 'admin%' AND vstr1 not Like 'gm%')) ORDER BY aid DESC LIMIT 0,$limit;");
+                $qrecent = $AeraDB['www']->query("select * from ae_activities a WHERE ((a.amsg not Like '%test%') AND (a.amsg not Like '%:LOG%') AND (a.amsg not Like '%quest%') AND (a.amsg not Like '%logged in%') AND (a.amsg not Like '%admin%') AND (a.amsg not Like 'gm%')) and ((a.vstr1 not Like '%test%' AND a.vstr1 not Like 'admin' AND a.vstr1 not Like 'admin%' AND a.vstr1 not Like 'gm%')) ORDER BY a.aid DESC LIMIT 0,$limit;");
                 $feeds = array();
                 foreach ($qrecent->result_array() as $row) {
                     if ($row['amsg'] == "PW:LOGIN")
                         $feeds['text'] = $row['vstr1'] . " just logged in PWI";
+                    else if (($row['amsg'] == "REGISTER") && (strlen($row['vstr2']) >= 2))
+                        $feeds['text'] = '<img alt="'.$row['vstr3'].'" style="width:20px; height:auto;" src="/images/world/'.strtolower($row['vstr2']).'.gif"> '.$row['vstr1'] . ' just registered an account.';
                     else if ($row['amsg'] == "REGISTER")
-                        $feeds['text'] = $row['vstr1'] . " just registered an account.";
+                        $feeds['text'] = $row['vstr1'] . ' just registered an account.';
                     else if ($row['amsg'] == "PW:LOGOUT")
                         $feeds['text'] = $row['vstr1'] . " just logged out from PWI";
                     else
@@ -277,6 +279,11 @@ class System extends CI_Controller
             ////////////////////////////////////////////////////////////////
             //NEWS SECTION
             ////////////////////////////////////////////////////////////////
+            
+            $recentsection = array();
+            $recentsection[msg] = "No news so far";
+            $recentsection[title] = "";
+            //$this->aera->addviews("NEWS", "blank", $recentsection);
             if (true) {
                 //XML from FB
                 ini_set('user_agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.1.9) Gecko/20071025 Firefox/2.0.0.9');
@@ -284,7 +291,7 @@ class System extends CI_Controller
                 $xml = simplexml_load_file($rssUrl); // Load the XML file
                 $entry = $xml->channel->item;
                 $i = 0;
-                while ($i < 10) {
+                while ($i < 2) {
                     if ($entry[$i]->author == "Aera Gaming International") {
                         $fbxml = array(
                             "TITLE" => $entry[$i]->title,

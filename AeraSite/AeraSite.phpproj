@@ -1777,6 +1777,8 @@
     <Content Include="application\models\index.html" />
     <Content Include="application\third_party\index.html" />
     <Content Include="application\views\designs\accounts\addredeem.htm" />
+    <Content Include="application\views\designs\accounts\blank2.htm" />
+    <Content Include="application\views\designs\accounts\result.htm" />
     <Content Include="application\views\designs\accounts\blank.htm" />
     <Content Include="application\views\designs\accounts\broadcast.htm" />
     <Content Include="application\views\designs\accounts\claim.htm" />
@@ -1812,6 +1814,7 @@
     <Content Include="application\views\designs\default\home.news.htm" />
     <Content Include="application\views\designs\default\home.poster.htm" />
     <Content Include="application\views\designs\default\home.right.htm" />
+    <Content Include="application\views\designs\default\refresh3.htm" />
     <Content Include="application\views\designs\default\refresh.htm" />
     <Content Include="application\views\designs\default\refresh2.htm" />
     <Content Include="application\views\designs\footer.htm" />
