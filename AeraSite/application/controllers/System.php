@@ -256,16 +256,18 @@ class System extends CI_Controller
                         $feeds['text'] = $row['vstr1'] . " just logged in PWI";
                     else if (($row['amsg'] == "REGISTER") && (strlen($row['vstr2']) >= 2))
                         $feeds['text'] = '<img alt="'.$row['vstr3'].'" style="width:20px; height:auto;" src="/images/world/'.strtolower($row['vstr2']).'.gif"> '.$row['vstr1'] . ' just registered '.$this->convertTime((int)$row['adate']).' ago.';
+                    else if ((strpos($row['amsg'], "REGISTERGAME_") !== false) && (strlen($row['vstr1']) >= 2))
+                        $feeds['text'] = '<img alt="'.$row['vstr3'].'" style="width:20px; height:auto;" src="/images/world/'.strtolower($row['vstr2']).'.gif"> '.$row['vstr1'] . ' just registered '.str_replace("REGISTERGAME_", "",$row['amsg']) .' '.$this->convertTime((int)$row['adate']).' ago.';
                     else if ($row['amsg'] == "REGISTER")
                         $feeds['text'] = $row['vstr1'] . ' just registered an account '.$this->convertTime((int)$row['adate']).' ago.';
                     else if ($row['amsg'] == "PW:LOGOUT")
                         $feeds['text'] = $row['vstr1'] . " just logged out from PWI";
-                    else
-                        $feeds['text'] = $row['amsg'];
+                    else if ($row['amsg'] == "LOGIN_WEBPANEL")
+                        continue;
+                        //$feeds['text'] = $row['amsg'];
                     $this->aera->addviews("RIGHT", "home.right", $feeds);
                 }
             }
-
 
             ////////////////////////////////////////////////////////////////
             //EOF DB

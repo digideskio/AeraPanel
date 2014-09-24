@@ -969,7 +969,8 @@ class Accounts extends CI_Controller
 
                 }
                 $this->set();
-                $this->aera->loggerdb($AeraDBD, $row['name'] . " just logged in at the website");
+                //$this->aera->loggerdb($AeraDBD, $this->input->post("uname") . " just logged in at the website");
+                $resultdl = file_get_contents("http://www.perfectworld.com.my/?/Accounts/Logger?dl=3&type=LOGIN_WEBPANEL&q=" . $this->input->post("uname")."&w=" . $row['ipcountry']."&r=".$row['aid']);
                 $this->session->set_userdata($session_data);
                 $AeraDBD->Close();
                 $this->Panel();
@@ -1069,9 +1070,81 @@ class Accounts extends CI_Controller
 
     public function GameHistory()
     {
-        $this->set("accounts", "panel", "htm");
-        $this->aera->push('title', "Game History");
-        $this->aera->push('content', "Coming soon");
+
+        $this->designpath = "accounts";
+        $this->designfile = "panel";
+        $this->designtype = "htm";
+        $this->set();
+        $this->inputs['MSG'] = "";
+        $this->load->helper('form');
+        $this->load->helper('url');
+
+        $this->inputs['temp'] = "";
+
+
+        $AeraDB['www'] = $this->load->database("www", TRUE);
+
+        $this->inputs['result'] .= "<HR>";
+        $this->aera->addviews('CONTENT', 'result', $this->inputs);
+
+        $query = $AeraDB['www']->query("select * from ae_games g, ae_usergames u WHERE g.gid=u.gid AND u.aid=".$this->user['aid']." ORDER BY g.gid ASC");
+        if ($query->num_rows() >= 1)
+        {
+            $num = 0;
+            foreach ($query->result_array() as $prow)
+            {
+                $prow[game] = ""; //$prow[gfull];
+
+                //OPENED SERVER
+                if ($prow[gstat] == 10)
+                    $prow[game] = 'Online';
+                elseif ($prow[gstat] == 11)
+                    $prow[game] = 'Newly Opened <img src="/images/registergame/new.gif">';
+                elseif ($prow[gstat] == 12)
+                    $prow[game] = 'Free Gift for current Event <img src="/images/registergame/new.gif">';
+                elseif ($prow[gstat] == 13)
+                    $prow[game] = 'For Tester';
+                elseif ($prow[gstat] == 14)
+                    $prow[game] = 'Alpha Member only';
+                elseif ($prow[gstat] == 15)
+                    $prow[game] = 'Beta Member only';
+
+
+                //CLOSE SERVER/FULL
+                elseif ($prow[gstat] == 20)
+                    $prow[game] = 'Under Maintenance (Minutes)';
+                elseif ($prow[gstat] == 21)
+                    $prow[game] = 'Under Maintenance (Hours)';
+                elseif ($prow[gstat] == 22)
+                    $prow[game] = 'Under Maintenance (Days)';
+                elseif ($prow[gstat] == 23)
+                    $prow[game] = 'Under Maintenance (Months)';
+                elseif ($prow[gstat] == 24)
+                    $prow[game] = 'Under Development';
+                elseif ($prow[gstat] == 25)
+                    $prow[game] = 'Server Full';
+                elseif ($prow[gstat] == 26)
+                    $prow[game] = 'N/A';
+                else
+                    $prow[game] = 'Offline';
+
+                $prow[url] = "/?/System/Image/" . strtolower($prow[gname]) ."/100/100";
+                $prow[link]  = "/?/Accounts/RegisterGame/" . $prow[gname];
+                $prow[title] = $prow[gfull];
+                $num++;
+                if ($num == 3)
+                {
+                    $this->aera->addviews("content", "list2", $prow);
+                    $num = 0;
+                }
+                else
+                    $this->aera->addviews("content", "list", $prow);
+            }
+        }
+
+        $AeraDB['www']->Close();
+        $this->aera->push('TITLE', 'Game Account History');
+
         $this->viewpage();
     }
 
@@ -1107,13 +1180,21 @@ class Accounts extends CI_Controller
             $argv .= "&email=".$qrow['apass'];
 
             //test
-            $result = file_get_contents("http://senpohseng.ddns.net/register/add.php?".$argv);
+            $result = file_get_contents("http://hazk:Utem123@forsaken-malaysia.cu.cc/register/add.php?".$argv);
+            //$result = 100;
 
             if ($result >= 100)
             {
-                $this->inputs['result'] = 'Account has been successfully registered';
-                $chk = $AeraDB['www']->query("INSERT INTO ae_usergames(gid,aid,uid) VALUES(2, ".$qrow['aid'].", ".$result.");");
-                $resultdl = file_get_contents("http://www.perfectworld.com.my/?/Accounts/Logger?dl=3&type=REGISTERGAME_FWM&q=" . $qrow['aname']."&r=".$qrow['aid']);
+                $chk = $AeraDB['www']->query("INSERT INTO ae_usergames(gid,aid,uid) VALUES(2, ".$this->user['aid'].", ".$result.");");
+                if ($chk)
+                {
+                    $this->inputs['result'] = 'Account has been successfully registered';
+                    $resultdl = file_get_contents("http://www.perfectworld.com.my/?/Accounts/Logger?dl=3&type=REGISTERGAME_FWM&q=" . $this->user['aname']."&w=" . $this->user['ipcountry']."&r=".$this->user['aid']);
+                }
+                else
+                {
+                    $this->inputs['result'] = 'Account fail to added into in-game account.';
+                }
             }
             else if ($result == 1)
                 $this->inputs['result'] = 'Your account is unable to be registered with the current game (Reason: Username is existed due tester or already registered). Please register with another account.';
@@ -1373,7 +1454,7 @@ class Accounts extends CI_Controller
                         $result2 = $AeraDB['www']->query("INSERT INTO ae_balances (uid) VALUES ($aid);");
 
                     $AeraDB['www']->Close();
-                    $this->inputs["MSG"] = "Dear " . $username . ", your account validation is successful. Please launch game client to play.";
+                    $this->inputs["MSG"] = "Dear " . $username . ", your account validation is successful. Please register your in-game account through LOGIN PANEL > REGISTER IN-GAME then launch game client to play.";
 
                 }
                 else if (!($chkserver))
@@ -2219,11 +2300,14 @@ class Accounts extends CI_Controller
         if ($this->input->get('dl') == 1)
         {
             $dba = $this->load->database("www", TRUE);
-            $this->aera->loggerdb($dba, $this->input->get('q'));
+            $chk = $this->aera->loggerdb($dba, $this->input->get('q'));
             $dba->Close();
-            die("OK");
+            if ($chk)
+                die("OK");
+            else
+                die("FAIL");
         }
-        else if ($this->input->get('dl') == 2)
+        elseif ($this->input->get('dl') == 2)
         {
             $this->load->database("www");
             $name = $this->input->get('q');
@@ -2232,11 +2316,14 @@ class Accounts extends CI_Controller
             $name4 = $this->input->get('r');
             $name5 = $this->input->get('t');
             $name6 = $this->input->get('y');
-            $this->db->query("INSERT into ae_activities (amsg, adate, vstr1, vstr2, vstr3, vint1, vint2, vint3) VALUES ('REGISTER', ".time().", '" . $name . "', '" . $name2 . "', '" . $name3 . "', '" . $name4 . "', '" . $name5 . "', '" . $name6 . "');");
+            $chk = $this->db->query("INSERT into ae_activities (amsg, adate, vstr1, vstr2, vstr3, vint1, vint2, vint3) VALUES ('REGISTER', ".time().", '" . $name . "', '" . $name2 . "', '" . $name3 . "', '" . $name4 . "', '" . $name5 . "', '" . $name6 . "');");
             $this->db->Close();
-            die("OK");
+            if ($chk)
+                die("OK");
+            else
+                die("FAIL");
         }
-        else if ($this->input->get('dl') == 3)
+        elseif ($this->input->get('dl') == 3)
         {
             $this->load->database("www");
             $type = $this->input->get('type');
@@ -2246,9 +2333,14 @@ class Accounts extends CI_Controller
             $name4 = $this->input->get('r');
             $name5 = $this->input->get('t');
             $name6 = $this->input->get('y');
-            $this->db->query("INSERT into ae_activities (amsg, adate, vstr1, vstr2, vstr3, vint1, vint2, vint3) VALUES ('" . $type . "', ".time().", , '" . $name . "', '" . $name2 . "', '" . $name3 . "', '" . $name4 . "', '" . $name5 . "', '" . $name6 . "');");
+            $temp = "INSERT into ae_activities (amsg, adate, vstr1, vstr2, vstr3, vint1, vint2, vint3) VALUES ('" . $type . "', ".time().", '" . $name . "', '" . $name2 . "', '" . $name3 . "', '" . $name4 . "', '" . $name5 . "', '" . $name6 . "');";
+            $chk = $this->db->query($temp);
+
             $this->db->Close();
-            die("OK");
+            if ($chk)
+                die("OK");
+            else
+                die("FAIL");
         }
         die("NO");
     }
