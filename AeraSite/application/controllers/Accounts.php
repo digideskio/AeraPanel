@@ -1106,6 +1106,7 @@ class Accounts extends CI_Controller
             $argv .= "&passwd=".$qrow['aemail'];
             $argv .= "&email=".$qrow['apass'];
 
+            //test
             $result = file_get_contents("http://senpohseng.ddns.net/register/add.php?".$argv);
 
             if ($result >= 100)
