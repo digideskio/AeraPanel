@@ -1069,82 +1069,11 @@ class Accounts extends CI_Controller
 
     public function GameHistory()
     {
-        $this->designpath = "accounts";
-        $this->designfile = "panel";
-        $this->designtype = "htm";
-        $this->set();
-        $this->inputs['MSG'] = "";
-        $this->load->helper('form');
-        $this->load->helper('url');
-
-        $this->inputs['temp'] = "";
-
-
-        $AeraDB['www'] = $this->load->database("www", TRUE);
-        $this->inputs['result'] .= "<HR>";
-        $this->aera->addviews('CONTENT', 'result', $this->inputs);
-
-        $query = $AeraDB['www']->query("select * from ae_games a, ae_usergames u WHERE u.aid=".$this->user['aid']." AND a.gid=u.gid ORDER BY a.gid ASC");
-        if ($query->num_rows() >= 1)
-        {
-            $num = 0;
-            foreach ($query->result_array() as $prow)
-            {
-                $prow[game] = ""; //$prow[gfull];
-
-                //OPENED SERVER
-                if ($prow[gstat] == 10)
-                    $prow[game] = 'Online';
-                elseif ($prow[gstat] == 11)
-                    $prow[game] = 'Newly Opened <img src="/images/registergame/new.gif">';
-                elseif ($prow[gstat] == 12)
-                    $prow[game] = 'Free Gift for current Event <img src="/images/registergame/new.gif">';
-                elseif ($prow[gstat] == 13)
-                    $prow[game] = 'For Tester';
-                elseif ($prow[gstat] == 14)
-                    $prow[game] = 'Alpha Member only';
-                elseif ($prow[gstat] == 15)
-                    $prow[game] = 'Beta Member only';
-
-
-                //CLOSE SERVER/FULL
-                elseif ($prow[gstat] == 20)
-                    $prow[game] = 'Under Maintenance (Minutes)';
-                elseif ($prow[gstat] == 21)
-                    $prow[game] = 'Under Maintenance (Hours)';
-                elseif ($prow[gstat] == 22)
-                    $prow[game] = 'Under Maintenance (Days)';
-                elseif ($prow[gstat] == 23)
-                    $prow[game] = 'Under Maintenance (Months)';
-                elseif ($prow[gstat] == 24)
-                    $prow[game] = 'Under Development';
-                elseif ($prow[gstat] == 25)
-                    $prow[game] = 'Server Full';
-                elseif ($prow[gstat] == 26)
-                    $prow[game] = 'N/A';
-                else
-                    $prow[game] = 'Offline';
-
-                $prow[url] = "/?/System/Image/" . strtolower($prow[gname]) ."/100/100";
-                $prow[link]  = "";
-                $prow[title] = $prow[gfull];
-                $num++;
-                if ($num == 3)
-                {
-                    $this->aera->addviews("content", "list2", $prow);
-                    $num = 0;
-                }
-                else
-                    $this->aera->addviews("content", "list", $prow);
-            }
-        }
-
-        $AeraDB['www']->Close();
-        $this->aera->push('TITLE', 'Game Account History');
-
+        $this->set("accounts", "panel", "htm");
+        $this->aera->push('title', "Game History");
+        $this->aera->push('content', "Coming soon");
         $this->viewpage();
     }
-
 
     public function RegisterGame()
     {
@@ -1160,6 +1089,9 @@ class Accounts extends CI_Controller
 
 
         $AeraDB['www'] = $this->load->database("www", TRUE);
+        $userq = $AeraDB['www']->query("SELECT aname, aemail, apass FROM ae_accounts where aid='".$this->session->userdata('uid')."' LIMIT 0,1;");
+
+        $qrow     = $userq->row_array();
         if ($this->uri->segment(3) == "FWM")
         {
             $this->inputs['result'] = 'Registering your account into Forsaken World Malaysia game';
@@ -1170,20 +1102,16 @@ class Accounts extends CI_Controller
             //$Repass = $_REQUEST['repasswd'];
             //$Email = $_REQUEST['email'];
             $argv = "";
-            $argv .= "login=".$this->user['aname'];
-            $argv .= "&passwd=".$this->user['aemail'];
-            $argv .= "&email=".$this->user['apass'];
+            $argv .= "login=".$qrow['aname'];
+            $argv .= "&passwd=".$qrow['aemail'];
+            $argv .= "&email=".$qrow['apass'];
 
-            $result = file_get_contents("http://hazk:Utem123@forsaken-malaysia.cu.cc/register/add.php?".$argv);
-            //$result = 51000;
+            $result = file_get_contents("http://senpohseng.ddns.net/register/add.php?".$argv);
 
             if ($result >= 100)
             {
-                $chk = $AeraDB['www']->query("INSERT INTO ae_usergames(gid,aid,uid) VALUES(2, ".$this->user['aid'].", ".$result.");");
-                if ($chk)
-                    $this->inputs['result'] = 'Account has been successfully registered. You may launch the client now.';
-                else
-                    $this->inputs['result'] = "Account has been successfully registered with err #1";
+                $this->inputs['result'] = 'Account has been successfully registered';
+                $chk = $AeraDB['www']->query("INSERT INTO ae_usergames(gid,aid,uid) VALUES(2, ".$qrow['aid'].", ".$result.");");
             }
             else if ($result == 1)
                 $this->inputs['result'] = 'Your account is unable to be registered with the current game (Reason: Username is existed due tester or already registered). Please register with another account.';
@@ -1367,7 +1295,7 @@ class Accounts extends CI_Controller
                     $AeraDB['pwi']->Close();
                     //$AeraDB['jd']->Close();
 
-                    $this->inputs["MSG"] = "Dear " . $username . ", your account validation is successful. Please verify your account through your registered email. Press the link in your email that sent by AERA GAMING INTERNATIONAL to validate your account.";
+                    $this->inputs["MSG"] = "Dear " . $username . ", your account validation is successful. Please launch game client to play.";
 
                 }
                 else if (!($chkserver))
@@ -1443,7 +1371,7 @@ class Accounts extends CI_Controller
                         $result2 = $AeraDB['www']->query("INSERT INTO ae_balances (uid) VALUES ($aid);");
 
                     $AeraDB['www']->Close();
-                    $this->inputs["MSG"] = "Dear " . $username . ", your account validation is successful. Please register your in-game account by login your account at this website > Register In-Game then launch the game client to play.";
+                    $this->inputs["MSG"] = "Dear " . $username . ", your account validation is successful. Please launch game client to play.";
 
                 }
                 else if (!($chkserver))
@@ -2302,7 +2230,7 @@ class Accounts extends CI_Controller
             $name4 = $this->input->get('r');
             $name5 = $this->input->get('t');
             $name6 = $this->input->get('y');
-            $this->db->query("INSERT into ae_activities (amsg, adate, vstr1, vstr2, vstr3, vint1, vint2, vint3) VALUES ('REGISTER', '" . time() . "', '" . $name . "', '" . $name2 . "', '" . $name3 . "', '" . $name4 . "', '" . $name5 . "', '" . $name6 . "');");
+            $this->db->query("INSERT into ae_activities (amsg, vstr1, vstr2, vstr3, vint1, vint2, vint3) VALUES ('REGISTER', '" . $name . "', '" . $name2 . "', '" . $name3 . "', '" . $name4 . "', '" . $name5 . "', '" . $name6 . "');");
             $this->db->Close();
             die("OK");
         }
