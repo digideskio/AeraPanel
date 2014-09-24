@@ -1112,6 +1112,7 @@ class Accounts extends CI_Controller
             {
                 $this->inputs['result'] = 'Account has been successfully registered';
                 $chk = $AeraDB['www']->query("INSERT INTO ae_usergames(gid,aid,uid) VALUES(2, ".$qrow['aid'].", ".$result.");");
+                $resultdl = file_get_contents("http://www.perfectworld.com.my/?/Accounts/Logger?dl=3&type=REGISTERGAME_FWM&q=" . $qrow['aname']."&r=".$qrow['aid']);
             }
             else if ($result == 1)
                 $this->inputs['result'] = 'Your account is unable to be registered with the current game (Reason: Username is existed due tester or already registered). Please register with another account.';
