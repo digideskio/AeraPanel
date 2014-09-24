@@ -2232,7 +2232,7 @@ class Accounts extends CI_Controller
             $name4 = $this->input->get('r');
             $name5 = $this->input->get('t');
             $name6 = $this->input->get('y');
-            $this->db->query("INSERT into ae_activities (amsg, vstr1, vstr2, vstr3, vint1, vint2, vint3) VALUES ('REGISTER', '" . $name . "', '" . $name2 . "', '" . $name3 . "', '" . $name4 . "', '" . $name5 . "', '" . $name6 . "');");
+            $this->db->query("INSERT into ae_activities (amsg, adate, vstr1, vstr2, vstr3, vint1, vint2, vint3) VALUES ('REGISTER', ".time().", '" . $name . "', '" . $name2 . "', '" . $name3 . "', '" . $name4 . "', '" . $name5 . "', '" . $name6 . "');");
             $this->db->Close();
             die("OK");
         }
@@ -2246,7 +2246,7 @@ class Accounts extends CI_Controller
             $name4 = $this->input->get('r');
             $name5 = $this->input->get('t');
             $name6 = $this->input->get('y');
-            $this->db->query("INSERT into ae_activities (amsg, vstr1, vstr2, vstr3, vint1, vint2, vint3) VALUES ('" . $type . "', '" . $name . "', '" . $name2 . "', '" . $name3 . "', '" . $name4 . "', '" . $name5 . "', '" . $name6 . "');");
+            $this->db->query("INSERT into ae_activities (amsg, adate, vstr1, vstr2, vstr3, vint1, vint2, vint3) VALUES ('" . $type . "', ".time().", , '" . $name . "', '" . $name2 . "', '" . $name3 . "', '" . $name4 . "', '" . $name5 . "', '" . $name6 . "');");
             $this->db->Close();
             die("OK");
         }
