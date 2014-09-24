@@ -255,9 +255,9 @@ class System extends CI_Controller
                     if ($row['amsg'] == "PW:LOGIN")
                         $feeds['text'] = $row['vstr1'] . " just logged in PWI";
                     else if (($row['amsg'] == "REGISTER") && (strlen($row['vstr2']) >= 2))
-                        $feeds['text'] = '<img alt="'.$row['vstr3'].'" style="width:20px; height:auto;" src="/images/world/'.strtolower($row['vstr2']).'.gif"> '.$row['vstr1'] . ' just registered an account.';
+                        $feeds['text'] = '<img alt="'.$row['vstr3'].'" style="width:20px; height:auto;" src="/images/world/'.strtolower($row['vstr2']).'.gif"> '.$row['vstr1'] . ' just registered '.$this->convertTime((int)$row['adate']).' ago.';
                     else if ($row['amsg'] == "REGISTER")
-                        $feeds['text'] = $row['vstr1'] . ' just registered an account.';
+                        $feeds['text'] = $row['vstr1'] . ' just registered an account '.$this->convertTime((int)$row['adate']).' ago.';
                     else if ($row['amsg'] == "PW:LOGOUT")
                         $feeds['text'] = $row['vstr1'] . " just logged out from PWI";
                     else
@@ -291,7 +291,7 @@ class System extends CI_Controller
                 $xml = simplexml_load_file($rssUrl); // Load the XML file
                 $entry = $xml->channel->item;
                 $i = 0;
-                while ($i < 2) {
+                while ($i < 10) {
                     if ($entry[$i]->author == "Aera Gaming International") {
                         $fbxml = array(
                             "TITLE" => $entry[$i]->title,
@@ -320,6 +320,67 @@ class System extends CI_Controller
 
         }
         $this->viewpage(FALSE);
+    }
+    public function secondsToTime($inputSeconds) {
+
+        $secondsInAMinute = 60;
+        $secondsInAnHour  = 60 * $secondsInAMinute;
+        $secondsInADay    = 24 * $secondsInAnHour;
+
+        // extract days
+        $days = floor($inputSeconds / $secondsInADay);
+
+        // extract hours
+        $hourSeconds = $inputSeconds % $secondsInADay;
+        $hours = floor($hourSeconds / $secondsInAnHour);
+
+        // extract minutes
+        $minuteSeconds = $hourSeconds % $secondsInAnHour;
+        $minutes = floor($minuteSeconds / $secondsInAMinute);
+
+        // extract the remaining seconds
+        $remainingSeconds = $minuteSeconds % $secondsInAMinute;
+        $seconds = ceil($remainingSeconds);
+
+        // return the final array
+        $obj = array(
+            'd' => (int) $days,
+            'h' => (int) $hours,
+            'm' => (int) $minutes,
+            's' => (int) $seconds,
+        );
+        return $obj;
+    }
+    public function convertTime($var)
+    {
+        $val = (time()-$var);
+        $arr = $this->secondsToTime($val);
+        if ($arr['d'] >= 1)
+            return $arr['d'].' days';
+        elseif ($arr['h'] >= 1)
+            return $arr['h'].' hours';
+        elseif ($arr['m'] >= 1)
+            return $arr['m'].' mins';
+        elseif ($arr['s'] >= 1)
+            return $arr['s'].' secs';
+        else
+            return 'N/A secs';
+    }
+    public function OLDconvertTime($var)
+    {
+        $val = (time()-$var);
+        if (60 > $val)
+            return $val.' secs';
+        elseif (60*60 > $val)
+            return round($val/(60)).' mins';
+        elseif (60*60*24 > $val)
+            return round($val/(60*24)).' hours';
+        elseif (60*60*24*7 > $val)
+            return round($val/(60*24*7)).' days';
+        elseif (60*60*24*31*12 > $val)
+            return round($val/(60*24*31*12)).' months';
+        else
+            return ($val).' xx';
     }
 
     //Login with Facebok
