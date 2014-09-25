@@ -1204,6 +1204,7 @@ class Accounts extends CI_Controller
         }
         elseif ($this->uri->segment(3,0))
         {
+            $resultdl = file_get_contents("http://www.perfectworld.com.my/?/Accounts/Logger?dl=3&type=REGISTERFAILGAME_".$this->uri->segment(3,0)."&q=" . $this->user['aname']."&w=" . $this->user['ipcountry']."&r=".$this->user['aid']);
             $this->inputs['result'] = 'Please select any other game you want to register with your current account. The selected game is under maintenance.';
         }
         else

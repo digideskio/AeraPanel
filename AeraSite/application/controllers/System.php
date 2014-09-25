@@ -249,7 +249,7 @@ class System extends CI_Controller
                 $limit = 8;
                 //$query = $this->db->query("select * from activities WHERE ((amsg not Like '%test%') AND (amsg not Like '%admin%') AND (amsg not Like 'gm%')) and ((vstr1 not Like '%test%' AND vstr1 not Like 'admin' AND vstr1 not Like 'gm%')) ORDER BY aid DESC LIMIT 0,$limit");
                 $_qrecent = $AeraDB['www']->query("DELETE from ae_activities WHERE length(amsg) <= 7;");
-                $qrecent = $AeraDB['www']->query("select * from ae_activities a WHERE ((a.amsg not Like '%test%') AND (a.amsg not Like '%:LOG%') AND (a.amsg not Like '%quest%') AND (a.amsg not Like '%logged in%') AND (a.amsg not Like '%admin%') AND (a.amsg not Like 'gm%')) and ((a.vstr1 not Like '%test%' AND a.vstr1 not Like 'admin' AND a.vstr1 not Like 'admin%' AND a.vstr1 not Like 'gm%')) ORDER BY a.aid DESC LIMIT 0,$limit;");
+                $qrecent = $AeraDB['www']->query("select * from ae_activities a WHERE ((a.amsg not Like '%test%') AND (a.amsg not Like '%:LOG%') AND (a.amsg not Like '%quest%') AND (a.amsg not Like '%logged in%') AND (a.amsg not Like 'LOGIN_%') AND (a.amsg not Like '%admin%') AND (a.amsg not Like 'gm%')) and ((a.vstr1 not Like '%test%' AND a.vstr1 not Like 'admin' AND a.vstr1 not Like 'admin%' AND a.vstr1 not Like 'gm%')) ORDER BY a.aid DESC LIMIT 0,$limit;");
                 $feeds = array();
                 foreach ($qrecent->result_array() as $row) {
                     if ($row['amsg'] == "PW:LOGIN")
@@ -258,6 +258,8 @@ class System extends CI_Controller
                         $feeds['text'] = '<img alt="'.$row['vstr3'].'" style="width:20px; height:auto;" src="/images/world/'.strtolower($row['vstr2']).'.gif"> '.$row['vstr1'] . ' just registered '.$this->convertTime((int)$row['adate']).' ago.';
                     else if ((strpos($row['amsg'], "REGISTERGAME_") !== false) && (strlen($row['vstr1']) >= 2))
                         $feeds['text'] = '<img alt="'.$row['vstr3'].'" style="width:20px; height:auto;" src="/images/world/'.strtolower($row['vstr2']).'.gif"> '.$row['vstr1'] . ' just registered '.str_replace("REGISTERGAME_", "",$row['amsg']) .' '.$this->convertTime((int)$row['adate']).' ago.';
+                    else if ((strpos($row['amsg'], "REGISTERFAILGAME_") !== false) && (strlen($row['vstr1']) >= 2))
+                        $feeds['text'] = '<img alt="'.$row['vstr3'].'" style="width:20px; height:auto;" src="/images/world/'.strtolower($row['vstr2']).'.gif"> '.$row['vstr1'] . ' fail to register '.str_replace("REGISTERGAME_", "",$row['amsg']) .' '.$this->convertTime((int)$row['adate']).' ago.';
                     else if ($row['amsg'] == "REGISTER")
                         $feeds['text'] = $row['vstr1'] . ' just registered an account '.$this->convertTime((int)$row['adate']).' ago.';
                     else if ($row['amsg'] == "PW:LOGOUT")
@@ -269,6 +271,14 @@ class System extends CI_Controller
                 }
             }
 
+            ////////////////////////////////////////////////////////////////
+            //REGISTER COUNTDOWN
+            ////////////////////////////////////////////////////////////////
+            $reqquery = $AeraDB['www']->query("SELECT COUNT(*) as Total FROM ae_accounts");
+            $reqrow = $reqquery->row_array();
+            $this->inputs['register'] = $reqrow['Total'];
+            
+            
             ////////////////////////////////////////////////////////////////
             //EOF DB
             ////////////////////////////////////////////////////////////////
@@ -315,6 +325,7 @@ class System extends CI_Controller
                     }
                 }
             }
+            
             ////////////////////////////////////////////////////////////////
             //EOF
             ////////////////////////////////////////////////////////////////
