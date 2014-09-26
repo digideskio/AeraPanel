@@ -259,7 +259,7 @@ class System extends CI_Controller
                     else if ((strpos($row['amsg'], "REGISTERGAME_") !== false) && (strlen($row['vstr1']) >= 2))
                         $feeds['text'] = '<img alt="'.$row['vstr3'].'" style="width:20px; height:auto;" src="/images/world/'.strtolower($row['vstr2']).'.gif"> '.$row['vstr1'] . ' just registered '.str_replace("REGISTERGAME_", "",$row['amsg']) .' '.$this->convertTime((int)$row['adate']).' ago.';
                     else if ((strpos($row['amsg'], "REGISTERFAILGAME_") !== false) && (strlen($row['vstr1']) >= 2))
-                        $feeds['text'] = '<img alt="'.$row['vstr3'].'" style="width:20px; height:auto;" src="/images/world/'.strtolower($row['vstr2']).'.gif"> '.$row['vstr1'] . ' fail to register '.str_replace("REGISTERGAME_", "",$row['amsg']) .' '.$this->convertTime((int)$row['adate']).' ago.';
+                        $feeds['text'] = '<img alt="'.$row['vstr3'].'" style="width:20px; height:auto;" src="/images/world/'.strtolower($row['vstr2']).'.gif"> '.$row['vstr1'] . ' fail to register '.str_replace("REGISTERFAILGAME_", "",$row['amsg']) .' '.$this->convertTime((int)$row['adate']).' ago.';
                     else if ($row['amsg'] == "REGISTER")
                         $feeds['text'] = $row['vstr1'] . ' just registered an account '.$this->convertTime((int)$row['adate']).' ago.';
                     else if ($row['amsg'] == "PW:LOGOUT")

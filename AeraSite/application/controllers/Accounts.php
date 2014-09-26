@@ -1129,7 +1129,7 @@ class Accounts extends CI_Controller
                     $prow[game] = 'Offline';
 
                 $prow[url] = "/?/System/Image/" . strtolower($prow[gname]) ."/100/100";
-                $prow[link]  = "/?/Accounts/RegisterGame/" . $prow[gname];
+                $prow[link]  = $prow[gurl];
                 $prow[title] = $prow[gfull];
                 $num++;
                 if ($num == 3)

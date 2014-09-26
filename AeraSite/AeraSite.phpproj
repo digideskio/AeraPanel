@@ -1778,6 +1778,7 @@
     <Content Include="application\third_party\index.html" />
     <Content Include="application\views\designs\accounts\addredeem.htm" />
     <Content Include="application\views\designs\accounts\blank2.htm" />
+    <Content Include="application\views\designs\accounts\panel - Copy.htm" />
     <Content Include="application\views\designs\accounts\result.htm" />
     <Content Include="application\views\designs\accounts\blank.htm" />
     <Content Include="application\views\designs\accounts\broadcast.htm" />
