@@ -278,6 +278,14 @@ class System extends CI_Controller
             $reqrow = $reqquery->row_array();
             $this->inputs['register'] = $reqrow['Total'];
             
+            ////////////////////////////////////////////////////////////////
+            //VISITOR COUNTDOWN
+            ////////////////////////////////////////////////////////////////
+            $reqquery = $AeraDB['www']->query("SELECT COUNT(*) as Total, vcountry FROM ae_visitors ORDER BY vid DESC;");
+            $reqrow = $reqquery->row_array();
+            $this->inputs['CounterAll1'] = $reqrow['Total'];
+            $this->inputs['CounterAll2'] = $reqrow['vcountry'];
+            
             
             ////////////////////////////////////////////////////////////////
             //EOF DB
